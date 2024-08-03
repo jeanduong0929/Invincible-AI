@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/navbar/navbar";
 import Footer from "@/components/footer";
 import "./globals.css";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,15 +20,22 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className={inter.className}>
-          <div className="flex h-screen flex-col font-mono">
-            <Navbar />
-            <main className="mx-auto w-11/12 max-w-screen-xl flex-grow">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="flex h-screen flex-col font-mono">
+              <Navbar />
+              <main className="mx-auto w-11/12 max-w-screen-xl flex-grow">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
