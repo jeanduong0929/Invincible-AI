@@ -11,7 +11,7 @@ const Navbar = () => {
   const { user, isLoaded } = useUser();
 
   return (
-    <nav className="mx-auto flex w-11/12 max-w-4xl items-center justify-between py-5">
+    <nav className="mx-auto flex w-11/12 max-w-screen-xl items-center justify-between py-5">
       <ul>
         <Link href={"/"} className="flex text-2xl font-bold">
           <Sword size={32} className="mr-2 scale-x-[-1]" />
