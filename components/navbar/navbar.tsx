@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { Loader2, Sword } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import UserDropdown from "./user-dropdown";
+import { ModeToggle } from "./theme-dropdown";
 
 const Navbar = () => {
   const { user, isLoaded } = useUser();
@@ -20,6 +21,7 @@ const Navbar = () => {
         </Link>
       </ul>
       <ul className="flex min-h-[40px] items-center gap-5">
+        <ModeToggle />
         {!isLoaded ? (
           <Loader2 className="w-5 animate-spin" />
         ) : user ? (
