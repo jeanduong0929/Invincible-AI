@@ -8,7 +8,6 @@ import {
   Database,
   LockIcon,
   MoonIcon,
-  PhoneIcon,
   Recycle,
 } from "lucide-react";
 import Link from "next/link";
@@ -69,7 +68,7 @@ export default function Home() {
 
       <div className="grid grid-cols-3 items-center gap-5">
         {features.map((feature, index) => (
-          <Card>
+          <Card key={index}>
             <CardHeader>
               {feature.icon}
               <CardDescription>{feature.description}</CardDescription>
