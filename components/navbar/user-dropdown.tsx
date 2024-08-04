@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import Link from "next/link";
+import { useClerk, useUser } from "@clerk/nextjs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,51 +10,61 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useClerk, useUser } from "@clerk/nextjs";
-import Link from "next/link";
+import UploadFileDialog from "./upload-file-dialog";
 
-const UserDropdown = () => {
+// Define types for menu items
+type MenuItem = {
+  label: string;
+  href: string;
+};
+
+// Define menu items outside the component
+const MENU_ITEMS: MenuItem[] = [
+  { label: "Profile", href: "/profile" },
+  { label: "Settings", href: "/settings" },
+];
+
+const UserDropdown: React.FC = () => {
   const { user } = useUser();
   const { signOut } = useClerk();
-
-  const menuItems = [
-    {
-      label: "Profile",
-      href: "/profile",
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-    },
-  ];
+  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
   };
 
+  const toggleFileDialog = () => setIsFileDialogOpen(!isFileDialogOpen);
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Avatar>
-          <AvatarImage src={user?.imageUrl} />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="font-mono">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {menuItems.map((item, index) => (
-          <Link href={item.href} key={index}>
-            <DropdownMenuItem className="cursor-pointer">
-              {item.label}
+    <div>
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <Avatar>
+            <AvatarImage src={user?.imageUrl} />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="font-mono">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {MENU_ITEMS.map(({ label, href }) => (
+            <DropdownMenuItem key={href} asChild>
+              <Link href={href}>{label}</Link>
             </DropdownMenuItem>
-          </Link>
-        ))}
-        <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>
-          Logout
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          ))}
+          <DropdownMenuItem onClick={toggleFileDialog}>
+            Upload File
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleSignOut}>Logout</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {isFileDialogOpen && (
+        <UploadFileDialog
+          open={isFileDialogOpen}
+          setOpen={setIsFileDialogOpen}
+        />
+      )}
+    </div>
   );
 };
 

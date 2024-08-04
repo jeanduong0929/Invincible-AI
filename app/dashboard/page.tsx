@@ -11,7 +11,7 @@ const DashboardPage = () => {
     e.preventDefault();
 
     try {
-      const { data } = await instance.post("http://localhost:3000/api/chat", {
+      const { data } = await instance.post("/chat", {
         text,
       });
 
