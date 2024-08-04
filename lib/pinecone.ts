@@ -2,34 +2,40 @@ import { Pinecone } from "@pinecone-database/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
 
-export class VectorStore {
-  private static instance: VectorStore | null = null;
-  private vectorStore: PineconeStore | null = null;
+export class PineconeStoreSingleton {
+  private static instance: PineconeStoreSingleton;
+  private pineconeStore: PineconeStore | null = null;
 
   private constructor() {}
 
-  static getInstance() {
-    if (!this.instance) {
-      this.instance = new VectorStore();
+  public static getInstance(): PineconeStoreSingleton {
+    if (!PineconeStoreSingleton.instance) {
+      PineconeStoreSingleton.instance = new PineconeStoreSingleton();
     }
-    return this.instance;
+    return PineconeStoreSingleton.instance;
   }
 
-  public async getVectorStore() {
-    if (!this.vectorStore) {
+  public async getVectorStore(): Promise<PineconeStore> {
+    if (!this.pineconeStore) {
+      console.log("Creating pinecone store...");
       const pinecone = new Pinecone({
         apiKey: process.env.PINECONE_API_KEY!,
       });
 
       const index = pinecone.Index(process.env.PINECONE_INDEX!);
 
-      this.vectorStore = await PineconeStore.fromExistingIndex(
-        new OpenAIEmbeddings(),
-        { pineconeIndex: index },
+      this.pineconeStore = new PineconeStore(
+        new OpenAIEmbeddings({
+          apiKey: process.env.OPENAI_API_KEY!,
+        }),
+        {
+          pineconeIndex: index,
+        },
       );
+    } else {
+      console.log("Using existing pinecone store...");
     }
-    return this.vectorStore.asRetriever({
-      k: 5,
-    });
+
+    return this.pineconeStore;
   }
 }
