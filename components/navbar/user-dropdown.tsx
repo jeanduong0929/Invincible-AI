@@ -32,7 +32,7 @@ const UserDropdown: React.FC = () => {
   const handleSignOut = async () => {
     await signOut();
   };
-
+  
   const toggleFileDialog = () => setIsFileDialogOpen(!isFileDialogOpen);
 
   return (
