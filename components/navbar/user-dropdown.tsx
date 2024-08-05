@@ -32,7 +32,7 @@ const UserDropdown: React.FC = () => {
   const handleSignOut = async () => {
     await signOut();
   };
-  
+
   const toggleFileDialog = () => setIsFileDialogOpen(!isFileDialogOpen);
 
   return (
@@ -48,14 +48,19 @@ const UserDropdown: React.FC = () => {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {MENU_ITEMS.map(({ label, href }) => (
-            <DropdownMenuItem key={href} asChild>
+            <DropdownMenuItem key={href} asChild className="cursor-pointer">
               <Link href={href}>{label}</Link>
             </DropdownMenuItem>
           ))}
-          <DropdownMenuItem onClick={toggleFileDialog}>
+          <DropdownMenuItem
+            onClick={toggleFileDialog}
+            className="cursor-pointer"
+          >
             Upload File
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleSignOut}>Logout</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+            Logout
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       {isFileDialogOpen && (

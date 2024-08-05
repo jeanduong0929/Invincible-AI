@@ -1,10 +1,10 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/providers/theme-provider";
 import type { Metadata } from "next";
 import Navbar from "@/components/navbar/navbar";
 import Footer from "@/components/footer";
 import "./globals.css";
-import { ThemeProvider } from "@/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
