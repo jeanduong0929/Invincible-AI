@@ -78,8 +78,6 @@ export class RetrieverChainSingleton {
             3. Detailed daily workouts for each training day, including:
               - Main lifts with sets, reps, and percentage of 1RM
               - Accessory exercises with sets and reps
-              - Rest periods between sets
-            4. Guidelines for warm-up and cool-down routines.
 
             Ensure that the program is tailored to the user's experience level, goals, and available training time. Provide clear explanations for your choices and any necessary modifications based on the user's information.
             
