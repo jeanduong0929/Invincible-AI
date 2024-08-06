@@ -9,47 +9,39 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { instance } from "@/lib/axios-config";
 import { CheckCircleIcon, FileWarningIcon, Loader2 } from "lucide-react";
+import { instance } from "@/lib/axios-config";
 
 interface Props {
   open: boolean;
   setOpen: (open: boolean) => void;
 }
 
-const UploadFileDialog = ({ open, setOpen }: Props) => {
+type UploadStatus = "idle" | "loading" | "success" | "duplicate";
+
+const UploadFileDialog: React.FC<Props> = ({ open, setOpen }) => {
   const [file, setFile] = useState<File | null>(null);
-  const [isUploadSuccess, setIsUploadSuccess] = useState(false);
-  const [isDuplicateDocument, setIsDuplicateDocument] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>("idle");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
-    }
+    setFile(e.target.files?.[0] || null);
   };
 
   const handleUploadSubmit = async () => {
-    setLoading(true);
-    if (!file) return console.error("No file selected");
+    if (!file) return;
+    setUploadStatus("loading");
     try {
       const formData = new FormData();
       formData.append("file", file);
 
-      const resp = await instance.post("/file", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      await instance.post("/file", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      setIsUploadSuccess(true);
-      console.log(resp);
+      setUploadStatus("success");
     } catch (error: any) {
-      if (error.response && error.response.status === 409) {
-        setIsDuplicateDocument(true);
-      }
+      setUploadStatus(error.response?.status === 409 ? "duplicate" : "idle");
       console.error(error.message);
     } finally {
-      setLoading(false);
       setFile(null);
     }
   };
@@ -57,10 +49,8 @@ const UploadFileDialog = ({ open, setOpen }: Props) => {
   return (
     <Dialog open={open} onOpenChange={() => setOpen(!open)}>
       <DialogContent className="min-h-[180px]">
-        {rendereDialog(
-          loading,
-          isUploadSuccess,
-          isDuplicateDocument,
+        {renderDialogContent(
+          uploadStatus,
           file,
           handleFileChange,
           handleUploadSubmit,
@@ -70,58 +60,52 @@ const UploadFileDialog = ({ open, setOpen }: Props) => {
   );
 };
 
-const rendereDialog = (
-  loading: boolean,
-  isUploadSuccess: boolean,
-  isDuplicateDocument: boolean,
+const renderDialogContent = (
+  status: UploadStatus,
   file: File | null,
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
   handleUploadSubmit: () => void,
 ) => {
-  if (loading)
-    return <Loader2 className="mx-auto mt-10 h-10 w-10 animate-spin" />;
-
-  if (isUploadSuccess) {
-    return (
+  const statusContent = {
+    loading: <Loader2 className="mx-auto mt-10 h-10 w-10 animate-spin" />,
+    success: (
       <DialogHeader>
         <DialogTitle>Upload Success</DialogTitle>
         <DialogDescription>
           <CheckCircleIcon className="mx-auto mt-10 h-10 w-10 text-green-700" />
         </DialogDescription>
       </DialogHeader>
-    );
-  }
-
-  if (isDuplicateDocument) {
-    return (
+    ),
+    duplicate: (
       <DialogHeader>
-        <DialogTitle> Document already exists</DialogTitle>
+        <DialogTitle>Document already exists</DialogTitle>
         <DialogDescription>
           <FileWarningIcon className="mx-auto mt-10 h-10 w-10 text-orange-300" />
         </DialogDescription>
       </DialogHeader>
-    );
-  }
+    ),
+    idle: (
+      <div>
+        <DialogHeader>
+          <DialogTitle>Upload a Document</DialogTitle>
+          <DialogDescription>
+            <Input type="file" className="mt-2" onChange={handleFileChange} />
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button
+            onClick={handleUploadSubmit}
+            className="mt-3 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-800"
+            disabled={!file}
+          >
+            Submit
+          </Button>
+        </DialogFooter>
+      </div>
+    ),
+  };
 
-  return (
-    <div>
-      <DialogHeader>
-        <DialogTitle>Upload a Document</DialogTitle>
-        <DialogDescription>
-          <Input type="file" className="mt-2" onChange={handleFileChange} />
-        </DialogDescription>
-      </DialogHeader>
-      <DialogFooter>
-        <Button
-          onClick={handleUploadSubmit}
-          className="disabled:curspor-pointer mt-3 disabled:bg-gray-300 disabled:text-gray-800"
-          disabled={file ? false : true}
-        >
-          Submit
-        </Button>
-      </DialogFooter>
-    </div>
-  );
+  return statusContent[status];
 };
 
 export default UploadFileDialog;

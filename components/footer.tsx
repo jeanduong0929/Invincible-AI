@@ -3,7 +3,7 @@ import React from "react";
 const Footer = () => {
   const year = new Date().getFullYear();
   return (
-    <footer className="py-10 text-center">
+    <footer className="py-24 text-center">
       &copy; {year} All rights reserved.
     </footer>
   );
