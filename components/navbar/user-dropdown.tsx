@@ -44,7 +44,7 @@ const UserDropdown: React.FC = () => {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="font-mono">
+        <DropdownMenuContent className="font-mono">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {MENU_ITEMS.map(({ label, href }) => (
